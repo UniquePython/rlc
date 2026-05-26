@@ -53,4 +53,19 @@ static inline long syscall3(long syscallNum, long rdi, long rsi, long rdx)
     return ret;
 }
 
+static inline long syscall4(long syscallNum, long rdi, long rsi, long rdx, long r10)
+{
+    long ret;
+
+    register long r10val asm("r10") = r10;
+
+    asm volatile(
+        "syscall"
+        : "=a"(ret)
+        : "0"(syscallNum), "D"(rdi), "S"(rsi), "d"(rdx), "r"(r10val)
+        : "rcx", "r11", "memory");
+
+    return ret;
+}
+
 #endif /* SYSCALL_H_ */
