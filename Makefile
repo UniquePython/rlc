@@ -1,44 +1,51 @@
 CC      := gcc
 AR      := ar
 
-CFLAGS  := -Wall -Wextra -std=c99 -ffreestanding -nostdlib -Iinclude
+CFLAGS  := -Wall -Wextra -std=gnu99 -ffreestanding -nostdlib -Iinclude
 
 ASFLAGS := -ffreestanding -nostdlib -Iinclude
 
 LDFLAGS := -nostdlib
 
-LIBNAME := librlc.a
+BUILDDIR := build
+BINDIR   := bin
+
+LIBNAME := $(BINDIR)/librlc.a
 
 SRC_C   := src/process.c
 SRC_S   := src/start.S
 
-OBJ_C   := $(SRC_C:.c=.o)
-OBJ_S   := $(SRC_S:.S=.o)
+OBJ_C   := $(patsubst src/%.c,$(BUILDDIR)/%.o,$(SRC_C))
+OBJ_S   := $(patsubst src/%.S,$(BUILDDIR)/%.o,$(SRC_S))
 
 OBJS    := $(OBJ_C) $(OBJ_S)
 
-TEST    := test
+TEST    := $(BINDIR)/test
 TESTSRC := test.c
 
 .PHONY: all clean
 
 all: $(LIBNAME) $(TEST)
 
+# Create directories
+$(BUILDDIR) $(BINDIR):
+	mkdir -p $@
+
 # Static library
-$(LIBNAME): $(OBJS)
+$(LIBNAME): $(OBJS) | $(BINDIR)
 	$(AR) rcs $@ $^
 
 # Compile C
-src/%.o: src/%.c
+$(BUILDDIR)/%.o: src/%.c | $(BUILDDIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Compile assembly
-src/%.o: src/%.S
+$(BUILDDIR)/%.o: src/%.S | $(BUILDDIR)
 	$(CC) $(ASFLAGS) -c $< -o $@
 
 # Link test program
-$(TEST): $(TESTSRC) $(LIBNAME)
-	$(CC) $(CFLAGS) $(LDFLAGS) $< -L. -lrlc -o $@
+$(TEST): $(TESTSRC) $(LIBNAME) | $(BINDIR)
+	$(CC) $(CFLAGS) $(LDFLAGS) $< -L$(BINDIR) -lrlc -o $@
 
 clean:
-	rm -f $(OBJS) $(LIBNAME) $(TEST)
+	rm -rf $(BUILDDIR) $(BINDIR)

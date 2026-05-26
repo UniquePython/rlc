@@ -1,3 +1,5 @@
+.intel_syntax noprefix
+
 .global _start
 
 .extern main
@@ -13,3 +15,5 @@ _start:
     mov rdi, rax # Move return value of main to rdi so that exit syscall can use it
 
     call exit
+
+.section .note.GNU-stack,"",@progbits
