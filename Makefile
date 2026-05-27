@@ -12,8 +12,8 @@ BINDIR   := bin
 
 LIBNAME := $(BINDIR)/librlc.a
 
-SRC_C   := src/process.c
-SRC_S   := src/start.S
+SRC_C := $(wildcard src/*.c)
+SRC_S := $(wildcard src/*.S)
 
 OBJ_C   := $(patsubst src/%.c,$(BUILDDIR)/%.o,$(SRC_C))
 OBJ_S   := $(patsubst src/%.S,$(BUILDDIR)/%.o,$(SRC_S))
