@@ -11,4 +11,7 @@
 Res_long write(uint fileDescriptor, const void *buffer, ulong count);
 ErrCode writeAll(uint fileDescriptor, const void *buffer, ulong count);
 
+Res_long read(uint fileDescriptor, void *buf, ulong count);
+ErrCode readAll(uint fileDescriptor, void *buf, ulong count);
+
 #endif /* IO_H_ */
